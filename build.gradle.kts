@@ -17,15 +17,9 @@ allprojects {
 
 subprojects {
     apply(plugin = "java")
-    apply(plugin = "org.springframework.boot")
-    apply(plugin = "io.spring.dependency-management")
 
     configure<JavaPluginExtension> {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    dependencies {
-        add("testImplementation", "org.springframework.boot:spring-boot-starter-test")
     }
 }
