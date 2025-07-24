@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:h2:file:./data/userdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+  liquibase:
+    change-log: classpath:db/db.changelog-master.yml
+    enabled: true

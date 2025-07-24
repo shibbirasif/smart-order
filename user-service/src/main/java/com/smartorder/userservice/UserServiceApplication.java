@@ -1,4 +1,4 @@
-package com.smart.order.user_service;
+package com.smartorder.userservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
