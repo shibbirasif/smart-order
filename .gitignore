@@ -35,4 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### H2 Data directory
 /user-service/data/
