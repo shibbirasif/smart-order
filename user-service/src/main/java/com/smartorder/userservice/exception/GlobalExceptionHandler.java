@@ -2,8 +2,11 @@ package com.smartorder.userservice.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.ErrorResponseException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,7 +21,7 @@ public class GlobalExceptionHandler {
         problemDetail.setTitle("Validation Error");
         problemDetail.setDetail(ex.getBindingResult().getFieldErrors().stream()
                 .map(err -> err.getField() + ":" + err.getDefaultMessage())
-                .reduce((a,b) -> a + ", " + b)
+                .reduce((a, b) -> a + ", " + b)
                 .orElse("Invalid input"));
         problemDetail.setType(URI.create("https://smartorder.com/errors/validation"));
         return problemDetail;
@@ -37,20 +40,34 @@ public class GlobalExceptionHandler {
         return ex.getBody();
     }
 
-    @ExceptionHandler(Exception.class)
-    public ProblemDetail handleUnknown(Exception ex) {
-        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        pd.setTitle("Internal Server Error");
-        pd.setDetail("Something went wrong.");
-        return pd;
-    }
-
     @ExceptionHandler(EmailAlreadyUsedException.class)
     public ProblemDetail handleEmailAlreadyUsed(EmailAlreadyUsedException ex) {
-        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);
-        pd.setTitle("Email already used");
-        pd.setDetail(ex.getMessage());
-        pd.setType(URI.create("https://smartorder.com/errors/email-already-used"));
-        return pd;
+        ProblemDetail problemDetails = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetails.setTitle("Email already used");
+        problemDetails.setDetail(ex.getMessage());
+        problemDetails.setType(URI.create("https://smartorder.com/errors/email-already-used"));
+        return problemDetails;
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ProblemDetail handleUnsupportedMethodException(HttpRequestMethodNotSupportedException ex) {
+        ProblemDetail problemDetails = ProblemDetail.forStatus(HttpStatus.METHOD_NOT_ALLOWED);
+        problemDetails.setTitle("Method Not Allowed");
+        problemDetails.setDetail("The requested method is not supported for this endpoint.");
+        return problemDetails;
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<String> handleUnsupportedMediaType(HttpMediaTypeNotSupportedException ex) {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body("Unsupported content type. Please use application/json.");
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleUnknown(Exception ex) {
+        ProblemDetail problemDetails = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        problemDetails.setTitle("Internal Server Error");
+        problemDetails.setDetail("Something went wrong.");
+        return problemDetails;
     }
 }

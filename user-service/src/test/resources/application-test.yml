@@ -16,8 +16,7 @@ spring:
     console:
       enabled: true
   liquibase:
-    enabled: false # Disable Liquibase for tests to use JPA ddl-auto
-
+    enabled: false 
 logging:
   level:
     com.smartorder.userservice: DEBUG
